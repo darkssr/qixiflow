@@ -1,0 +1,274 @@
+/* 七夕 · 鹊桥仙 */
+
+:root {
+  --ink:      #05070f;
+  --paper:    #f2e8d8;
+  --gold:     #e7c68a;
+  --cinnabar: #c8403c;
+  --serif:    "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --brush:    "Ma Shan Zheng", "Kaiti SC", "STKaiti", "KaiTi", "Songti SC", serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: #05070f;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--serif);
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+  z-index: 0;
+}
+
+/* 覆盖层本身不吃事件，只有具体控件才吃 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ---------------- 标题 ---------------- */
+
+.title {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1.8s ease, transform 2.4s cubic-bezier(.22,.61,.36,1), filter 1.8s ease;
+  filter: blur(6px);
+}
+.title.show   { opacity: 1; filter: blur(0); transform: translate(-50%, -50%) scale(1); }
+.title.hide   { opacity: 0; filter: blur(10px); transform: translate(-50%, -62%) scale(1.06); }
+
+.title-sub {
+  font-size: clamp(11px, 1.5vw, 15px);
+  letter-spacing: .62em;
+  text-indent: .62em;
+  color: rgba(231, 198, 138, .72);
+  margin-bottom: 1.1em;
+}
+.title-main {
+  font-family: var(--brush);
+  font-weight: 400;
+  font-size: clamp(64px, 15vw, 168px);
+  line-height: 1;
+  letter-spacing: .10em;
+  text-indent: .10em;
+  color: #fbf3e4;
+  text-shadow:
+    0 0 18px rgba(255, 233, 196, .55),
+    0 0 60px rgba(198, 176, 255, .40),
+    0 0 130px rgba(120, 160, 255, .30);
+}
+.title-en {
+  margin-top: 1.5em;
+  font-size: clamp(11px, 1.5vw, 14px);
+  letter-spacing: .48em;
+  text-indent: .48em;
+  color: rgba(226, 224, 240, .58);
+}
+
+/* ---------------- 诗 ---------------- */
+
+.poem {
+  position: absolute;
+  top: 50%;
+  right: clamp(18px, 5vw, 76px);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: clamp(9px, 1.5vw, 22px);
+}
+
+/* 诗句背后的柔和暗底，保证叠在光带上也读得清 */
+.poem::before {
+  content: "";
+  position: absolute;
+  inset: -34px -30px -30px -46px;
+  background: radial-gradient(ellipse at 60% 50%,
+              rgba(4, 6, 18, .60) 0%,
+              rgba(4, 6, 18, .34) 46%,
+              rgba(4, 6, 18, 0) 78%);
+  filter: blur(2px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.poem .col {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--brush);
+  font-size: clamp(17px, 2.5vw, 30px);
+  line-height: 1.7;
+  letter-spacing: .16em;
+  color: #f4ecdd;
+  text-shadow: 0 0 12px rgba(10, 14, 34, .95), 0 0 30px rgba(150, 170, 255, .28);
+  white-space: nowrap;
+}
+
+/* 落款 */
+.poem .col.sign {
+  font-size: clamp(11px, 1.35vw, 15px);
+  color: rgba(231, 198, 138, .70);
+  letter-spacing: .3em;
+  align-self: flex-end;
+  margin-inline-start: clamp(4px, .8vw, 10px);
+}
+
+.poem .ch {
+  display: inline-block;
+  opacity: 0;
+}
+.poem.on .ch {
+  animation: chIn 1.15s cubic-bezier(.19,.9,.31,1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes chIn {
+  from { opacity: 0; transform: translateY(-14px); filter: blur(7px); }
+  to   { opacity: 1; transform: translateY(0);     filter: blur(0); }
+}
+
+/* ---------------- 印章（作为诗的最后一件「落款」） ---------------- */
+
+.poem .seal {
+  align-self: flex-end;
+  margin-inline-start: clamp(6px, 1vw, 14px);
+  margin-block-end: 2px;
+  width: clamp(38px, 5vw, 54px);
+  height: clamp(38px, 5vw, 54px);
+  border: 2.5px solid var(--cinnabar);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  opacity: 0;
+  box-shadow: 0 0 24px rgba(200, 64, 60, .32);
+  background: rgba(200, 64, 60, .06);
+}
+.poem.on .seal {
+  animation: sealIn 1s cubic-bezier(.18,1.5,.42,1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes sealIn {
+  0%   { opacity: 0; transform: rotate(-16deg) scale(1.9); }
+  60%  { opacity: .96; }
+  100% { opacity: .94; transform: rotate(-4deg) scale(1); }
+}
+.poem .seal span {
+  font-family: var(--brush);
+  font-size: clamp(14px, 1.9vw, 20px);
+  line-height: 1.04;
+  color: var(--cinnabar);
+}
+
+/* ---------------- 提示 ---------------- */
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 108px;
+  transform: translateX(-50%);
+  font-size: 13px;
+  letter-spacing: .34em;
+  text-indent: .34em;
+  color: rgba(238, 234, 246, .40);
+  opacity: 0;
+  transition: opacity 1.6s ease;
+  white-space: nowrap;
+}
+.hint.on { opacity: 1; animation: breathe 4.5s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity: .30; } 50% { opacity: .72; } }
+
+/* ---------------- 底部控件 ---------------- */
+
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%) translateY(26px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 16px;
+  border-radius: 999px;
+  background: rgba(12, 16, 34, .48);
+  border: 1px solid rgba(231, 198, 138, .20);
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.22,.61,.36,1);
+}
+.dock.on { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+
+.wish-input {
+  width: clamp(140px, 26vw, 230px);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 14px;
+  letter-spacing: .09em;
+}
+.wish-input::placeholder { color: rgba(238, 234, 246, .34); letter-spacing: .12em; }
+
+.btn {
+  flex: none;
+  border: 1px solid rgba(231, 198, 138, .26);
+  background: rgba(231, 198, 138, .07);
+  color: rgba(242, 232, 216, .88);
+  font-family: var(--serif);
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-indent: .12em;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .3s ease, color .3s ease, border-color .3s ease, transform .2s ease;
+}
+.btn:hover  { background: rgba(231, 198, 138, .18); border-color: rgba(231, 198, 138, .5); }
+.btn:active { transform: scale(.95); }
+
+.btn-primary {
+  background: linear-gradient(160deg, rgba(240, 205, 140, .96), rgba(212, 150, 96, .94));
+  color: #241704;
+  border-color: transparent;
+  font-weight: 600;
+}
+.btn-primary:hover { background: linear-gradient(160deg, #ffdda1, #e6ab74); }
+
+.btn.icon { padding: 7px 12px; font-size: 14px; text-indent: 0; letter-spacing: 0; }
+.btn.off  { color: rgba(242, 232, 216, .30); border-color: rgba(231, 198, 138, .12); }
+
+@media (max-width: 640px) {
+  .dock { bottom: 18px; padding: 6px 6px 6px 12px; gap: 6px; }
+  .btn  { padding: 6px 11px; font-size: 12px; }
+  .hint { bottom: 92px; font-size: 12px; }
+  .poem { right: 15px; gap: 8px; }
+  .poem .col { font-size: clamp(15px, 4.4vw, 22px); }
+  .poem::before { inset: -26px -22px -22px -34px; }
+}

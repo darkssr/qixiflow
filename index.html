@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070f">
+<title>七夕 · 鹊桥仙</title>
+<meta name="description" content="金风玉露一相逢，便胜却人间无数。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div class="overlay">
+  <div id="title" class="title">
+    <div class="title-sub">农历七月初七</div>
+    <h1 class="title-main">七夕</h1>
+    <div class="title-en">鹊 桥 仙</div>
+  </div>
+
+  <!-- 诗句与印章由 scene.js 注入 -->
+  <div id="poem" class="poem" aria-label="鹊桥仙 · 秦观"></div>
+
+  <div id="hint" class="hint">轻触夜空，绽放心愿</div>
+</div>
+
+<div id="dock" class="dock">
+  <input id="wish" class="wish-input" type="text" maxlength="14"
+         placeholder="写下今夜的心愿…" autocomplete="off" spellcheck="false">
+  <button id="send" class="btn btn-primary" type="button">放灯</button>
+  <button id="replay" class="btn" type="button" title="重播（R）">重播</button>
+  <button id="sound" class="btn icon" type="button" title="音效">♪</button>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/sky.js"></script>
+<script src="js/magpie.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/scene.js"></script>
+
+</body>
+</html>
