@@ -155,6 +155,24 @@
 
   /* ---------------- 对外接口 ---------------- */
 
+  // 音量渐变：带取消令牌，后发起的渐变会让先前那条链自行退出，
+  // 避免淡入淡出并行时互相拉扯（旧的淡出链会误把元素 pause 掉）。
+  bgm._fadeId = 0;
+  function fadeTo(el, target, stepSize, ms, onDone) {
+    var id = ++bgm._fadeId;
+    (function step() {
+      if (id !== bgm._fadeId) return;
+      var d = target - el.volume;
+      if (Math.abs(d) <= stepSize) {
+        el.volume = target;
+        if (onDone) onDone();
+        return;
+      }
+      el.volume = Math.max(0, Math.min(1, el.volume + (d > 0 ? stepSize : -stepSize)));
+      setTimeout(step, ms);
+    })();
+  }
+
   /** 探测是否放了自定义音频文件 */
   bgm.probe = function (url) {
     return fetch(url, { method: 'HEAD' })
@@ -178,14 +196,13 @@
       var el = bgm.el;
       el.volume = 0;
       var p = el.play();
-      var fade = function () {
-        var step = function () {
-          el.volume = Math.min(0.55, el.volume + 0.02);
-          if (el.volume < 0.55) setTimeout(step, 90);
-        };
-        step();
-      };
-      if (p && p.then) p.then(fade).catch(function () { startSynth(); });
+      var fade = function () { fadeTo(el, 0.55, 0.02, 90); };
+      if (p && p.then) p.then(fade).catch(function (err) {
+        // 被 interlude() 的 pause() 打断属正常流程，不该退回合成音，
+        // 否则 mode 会被永久改成 synth，背景乐再也回不来。
+        if (err && err.name === 'AbortError') return;
+        startSynth();
+      });
       else fade();
       bgm.playing = true;
       return;
@@ -197,12 +214,7 @@
     bgm._endInterlude(true);
     if (bgm.mode === 'file' && bgm.el) {
       var el = bgm.el;
-      var step = function () {
-        el.volume = Math.max(0, el.volume - 0.05);
-        if (el.volume > 0) setTimeout(step, 60);
-        else el.pause();
-      };
-      step();
+      fadeTo(el, 0, 0.05, 60, function () { el.pause(); });
       bgm.playing = false;
       return;
     }
@@ -226,23 +238,30 @@
     if (!bgm._interEl) {
       bgm._interEl = new Audio();
       bgm._interEl.preload = 'auto';
+      bgm._interEl.loop = false;
       bgm._interEl.addEventListener('ended', function () { bgm._endInterlude(); });
       bgm._interEl.addEventListener('error', function () { bgm._endInterlude(); });
     }
     var ie = bgm._interEl;
-    if (ie.getAttribute('src') !== url) ie.setAttribute('src', url), ie.load();
+    if (ie.getAttribute('src') !== url) { ie.setAttribute('src', url); ie.load(); }
 
+    // 只在「首次进入插曲」时记录要回到哪首曲子
     if (!bgm._interActive) {
       bgm._interActive = true;
       bgm._wasPlaying = bgm.playing;
-      if (bgm.mode === 'file' && bgm.el) bgm.el.pause();
-      else stopSynth(0.4);
     }
+    // 压住背景乐必须每次都做：标志位一旦残留，
+    // 否则第二次触发就会跳过这步，听到的还是默认曲。
+    if (bgm.mode === 'file' && bgm.el) bgm.el.pause();
+    else stopSynth(0.4);
 
-    ie.currentTime = 0;
+    try { ie.currentTime = 0; } catch (e) { /* 元数据未就绪时忽略 */ }
     ie.volume = 0.68;
     var p = ie.play();
-    if (p && p.catch) p.catch(function () { bgm._endInterlude(); });
+    if (p && p.catch) p.catch(function (err) {
+      if (err && err.name === 'AbortError') return;   // 被下一次触发打断，不算失败
+      bgm._endInterlude();
+    });
   };
 
   bgm._endInterlude = function (silent) {
