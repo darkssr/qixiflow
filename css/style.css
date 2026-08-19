@@ -15,6 +15,7 @@ html, body {
   height: 100%;
   background: #05070f;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
@@ -23,6 +24,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 #scene {
@@ -151,20 +153,20 @@ body {
 
 .poem .seal {
   align-self: flex-end;
-  margin-inline-start: clamp(6px, 1vw, 14px);
+  margin-inline-start: clamp(5px, .8vw, 11px);
   margin-block-end: 2px;
-  width: clamp(38px, 5vw, 54px);
-  height: clamp(38px, 5vw, 54px);
-  border: 2.5px solid var(--cinnabar);
-  border-radius: 3px;
+  width: clamp(26px, 3.0vw, 36px);
+  height: clamp(26px, 3.0vw, 36px);
+  border-radius: 2px;
+  background: var(--cinnabar);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 0;
+  overflow: hidden;
   opacity: 0;
-  box-shadow: 0 0 24px rgba(200, 64, 60, .32);
-  background: rgba(200, 64, 60, .06);
+  box-shadow: 0 0 16px rgba(200, 64, 60, .30), inset 0 0 0 1px rgba(255, 235, 225, .20);
 }
 .poem.on .seal {
   animation: sealIn 1s cubic-bezier(.18,1.5,.42,1) forwards;
@@ -172,14 +174,16 @@ body {
 }
 @keyframes sealIn {
   0%   { opacity: 0; transform: rotate(-16deg) scale(1.9); }
-  60%  { opacity: .96; }
-  100% { opacity: .94; transform: rotate(-4deg) scale(1); }
+  60%  { opacity: .98; }
+  100% { opacity: .96; transform: rotate(-4deg) scale(1); }
 }
 .poem .seal span {
-  font-family: var(--brush);
-  font-size: clamp(14px, 1.9vw, 20px);
-  line-height: 1.04;
-  color: var(--cinnabar);
+  font-family: "Songti SC", "STSong", "SimSun", var(--serif);
+  font-weight: 700;
+  font-size: clamp(10px, 1.18vw, 14px);
+  line-height: 1.14;
+  color: #fdf3ea;
+  text-shadow: none;
 }
 
 /* ---------------- 提示 ---------------- */
@@ -272,3 +276,91 @@ body {
   .poem .col { font-size: clamp(15px, 4.4vw, 22px); }
   .poem::before { inset: -26px -22px -22px -34px; }
 }
+
+/* ---------------- 手机横屏：竖向空间很紧，整体收一档 ---------------- */
+
+@media (max-height: 480px) {
+  .title-main { font-size: clamp(48px, 13vh, 84px); }
+  .title-sub, .title-en { font-size: 10px; letter-spacing: .42em; }
+  .title-en { margin-top: 1em; }
+  .poem { right: max(14px, env(safe-area-inset-right)); gap: 7px; }
+  .poem .col { font-size: clamp(13px, 3.4vh, 19px); line-height: 1.55; }
+  .poem .col.sign { font-size: 10px; }
+  .poem .seal { width: 24px; height: 24px; }
+  .poem .seal span { font-size: 9px; }
+  .hint { display: none; }
+  .dock {
+    bottom: max(10px, env(safe-area-inset-bottom));
+    padding: 5px 5px 5px 11px;
+    gap: 5px;
+  }
+  .wish-input { width: clamp(110px, 20vw, 180px); font-size: 13px; }
+  .btn { padding: 5px 10px; font-size: 12px; }
+}
+
+/* ---------------- 手机竖屏：引导横过来看 ---------------- */
+
+.rotate {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 32px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 38%, rgba(28, 24, 62, .55), rgba(4, 6, 16, .0) 62%),
+    rgba(4, 6, 16, .93);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+body.ask-rotate .rotate { display: flex; }
+body.ask-rotate .dock   { opacity: 0; pointer-events: none; }
+
+.rotate-phone {
+  width: 46px;
+  height: 78px;
+  border: 2px solid rgba(231, 198, 138, .75);
+  border-radius: 9px;
+  position: relative;
+  margin-bottom: 26px;
+  animation: tilt 2.6s cubic-bezier(.6,.05,.3,1) infinite;
+  box-shadow: 0 0 26px rgba(231, 198, 138, .22);
+}
+.rotate-phone span {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: rgba(231, 198, 138, .6);
+}
+@keyframes tilt {
+  0%, 26%   { transform: rotate(0deg); }
+  56%, 84%  { transform: rotate(-90deg); }
+  100%      { transform: rotate(-90deg); }
+}
+
+.rotate-title {
+  font-family: var(--brush);
+  font-size: 30px;
+  letter-spacing: .2em;
+  text-indent: .2em;
+  color: #f6efe1;
+  text-shadow: 0 0 22px rgba(255, 232, 190, .35);
+}
+.rotate-sub {
+  margin: 10px 0 26px;
+  font-size: 13px;
+  line-height: 1.9;
+  letter-spacing: .1em;
+  color: rgba(238, 234, 246, .5);
+  max-width: 17em;
+}
+.rotate .btn { pointer-events: auto; }

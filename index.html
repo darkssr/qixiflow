@@ -2,8 +2,10 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05070f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>七夕 · 鹊桥仙</title>
 <meta name="description" content="金风玉露一相逢，便胜却人间无数。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,12 +36,23 @@
          placeholder="写下今夜的心愿…" autocomplete="off" spellcheck="false">
   <button id="send" class="btn btn-primary" type="button">放灯</button>
   <button id="replay" class="btn" type="button" title="重播（R）">重播</button>
+  <button id="music" class="btn icon" type="button" title="背景音乐">♫</button>
   <button id="sound" class="btn icon" type="button" title="音效">♪</button>
 </div>
 
+<!-- 手机竖屏时的横屏引导 -->
+<div id="rotate" class="rotate">
+  <div class="rotate-phone"><span></span></div>
+  <p class="rotate-title">横屏观看</p>
+  <p class="rotate-sub">银河横亘天际，横过来才容得下这一场相逢</p>
+  <button id="stay" class="btn" type="button">仍要竖屏</button>
+</div>
+
 <script src="js/utils.js"></script>
+<script src="js/audio.js"></script>
 <script src="js/sky.js"></script>
 <script src="js/magpie.js"></script>
+<script src="js/figures.js"></script>
 <script src="js/particles.js"></script>
 <script src="js/scene.js"></script>
 

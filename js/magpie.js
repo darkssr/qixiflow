@@ -23,13 +23,13 @@
   function body(ctx) {
     ctx.beginPath();
     ctx.moveTo(0.50, -0.015);                        // 喙尖
-    ctx.quadraticCurveTo(0.36, -0.15, 0.17, -0.125); // 头顶
-    ctx.quadraticCurveTo(-0.06, -0.115, -0.27, -0.05);
-    ctx.lineTo(-0.74, -0.135);                       // 尾上缘
-    ctx.lineTo(-0.71, 0.015);                        // 尾尖
-    ctx.lineTo(-0.26, 0.055);                        // 尾下缘回到身体
-    ctx.quadraticCurveTo(-0.04, 0.155, 0.17, 0.10);  // 腹部
-    ctx.quadraticCurveTo(0.34, 0.055, 0.50, -0.015); // 喉部→喙
+    ctx.quadraticCurveTo(0.36, -0.16, 0.16, -0.135); // 头顶
+    ctx.quadraticCurveTo(-0.07, -0.125, -0.27, -0.060);
+    ctx.lineTo(-0.66, -0.125);                       // 尾上缘
+    ctx.lineTo(-0.63, 0.020);                        // 尾尖
+    ctx.lineTo(-0.25, 0.062);                        // 尾下缘回到身体
+    ctx.quadraticCurveTo(-0.03, 0.175, 0.17, 0.115); // 腹部
+    ctx.quadraticCurveTo(0.34, 0.060, 0.50, -0.015); // 喉部→喙
     ctx.closePath();
     ctx.fill();
   }
@@ -62,9 +62,15 @@
     body(ctx);
 
     // 腹部白斑 —— 喜鹊的标志
-    ctx.fillStyle = 'rgba(236,242,255,0.80)';
+    ctx.fillStyle = 'rgba(238,244,255,0.86)';
     ctx.beginPath();
-    ctx.ellipse(0.12, 0.055, 0.135, 0.052, -0.08, 0, TAU);
+    ctx.ellipse(0.11, 0.070, 0.150, 0.058, -0.10, 0, TAU);
+    ctx.fill();
+
+    // 肩羽白斑，把黑块打散，小尺寸下更认得出是鸟
+    ctx.fillStyle = 'rgba(226,236,255,0.72)';
+    ctx.beginPath();
+    ctx.ellipse(-0.05, -0.045, 0.115, 0.040, -0.16, 0, TAU);
     ctx.fill();
 
     // 近翅
@@ -73,7 +79,7 @@
 
     // 翅羽边缘的幽蓝反光
     if (rim) {
-      ctx.strokeStyle = 'rgba(' + rim + ',' + (0.42 * Math.abs(lift) + 0.16).toFixed(3) + ')';
+      ctx.strokeStyle = 'rgba(' + rim + ',' + (0.46 * Math.abs(lift) + 0.20).toFixed(3) + ')';
       ctx.lineWidth = 0.035;
       ctx.lineJoin = 'round';
       var ty = -0.66 * lift;
@@ -120,7 +126,7 @@
         t: t,
         tx: tmp.x + Q.rand(-6, 6),
         ty: tmp.y + depth * 7 - 4,
-        size: Q.rand(15, 23) * (1 + depth * 0.14),
+        size: Q.rand(19, 27) * (1 + depth * 0.14),
         depth: depth,
         delay: delay,
         dur: Q.rand(2.0, 2.9),
